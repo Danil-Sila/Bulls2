@@ -12,6 +12,8 @@ function respond(array $data, int $status = 200): void {
 
 $registered_fnc = [];
 
+require_once APP_ROOT . 'api_fnc/stockSummary.php';
+
 //защита от CSRF
 $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !str_starts_with($contentType, 'application/json')) {
