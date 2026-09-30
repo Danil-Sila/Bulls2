@@ -1,6 +1,13 @@
 <?php
-
-$menu = ['index.php' => 'Главная',];
+$menu = [
+	'index.php'		=> 'Главная',
+	'bulls.php'		=> 'Быки',
+	'Справочники'	=> [
+		'contractors.php' => 'Контрагенты',
+		'buyers.php'	  => 'Покупатели',
+		'packagings.php'  => 'Упаковки',
+	],
+];
 ?>
 
 <!doctype html>
@@ -22,10 +29,23 @@ $menu = ['index.php' => 'Главная',];
 				</button>
 				<div class="collapse navbar-collapse" id="mainNav">
 					<ul class="navbar-nav">
-						<?php foreach ($menu as $file => $label): ?>
-							<li class="nav-item">
-								<a class="nav-link<?= $file === $page ? ' active' : '' ?>" href="<?= $file ?>"><?= htmlspecialchars($label) ?></a>
-							</li>
+						<?php foreach ($menu as $key => $item): ?>
+							<?php if (is_array($item)): ?>
+								<li class="nav-item dropdown">
+									<a class="nav-link dropdown-toggle<?= isset($item[$page]) ? ' active' : '' ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><?= htmlspecialchars($key) ?></a>
+									<ul class="dropdown-menu">
+										<?php foreach ($item as $file => $label): ?>
+											<li>
+												<a class="dropdown-item<?= $file === $page ? ' active' : '' ?>" href="<?= $file ?>"><?= htmlspecialchars($label) ?></a>
+											</li>
+										<?php endforeach; ?>
+									</ul>
+								</li>
+							<?php else: ?>
+								<li class="nav-item">
+									<a class="nav-link<?= $key === $page ? ' active' : '' ?>" href="<?= $key ?>"><?= htmlspecialchars($item) ?></a>
+								</li>
+							<?php endif; ?>
 						<?php endforeach; ?>
 					</ul>
 				</div>

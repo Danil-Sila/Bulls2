@@ -12,7 +12,9 @@ async function callApi(sender, params = {}) {
 		throw new Error(`Сервер вернул неожиданный ответ (HTTP ${response.status})`);
 	}
 	if (!data.success) {
-		throw new Error(data.error || `Ошибка сервера (HTTP ${response.status})`);
+		const error = new Error(data.error || `Ошибка сервера (HTTP ${response.status})`);
+		error.fields = data.fields || {};
+		throw error;
 	}
 	return data;
 }

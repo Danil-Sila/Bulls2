@@ -1,1 +1,15 @@
-Require all denied
+# Корень проекта совпадает с корнем сайта: служебное закрываем здесь.
+Options -Indexes
+DirectoryIndex index.php
+AddDefaultCharset UTF-8
+
+# Служебные каталоги
+RedirectMatch 403 (?i)(^|/)(api_fnc|views|db|bin|logs|docs|tests|\.git)(/|$)
+
+# Служебные файлы: настройки, документация, схема, логи, скрытые
+<FilesMatch "(?i)^(setup|config|config\.example)\.php$">
+	Require all denied
+</FilesMatch>
+<FilesMatch "(?i)(^\.|\.(sql|md|log|json|lock)$)">
+	Require all denied
+</FilesMatch>

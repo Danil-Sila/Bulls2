@@ -1,6 +1,8 @@
 <?php
 
-require __DIR__ . '/../setup.php';
+require __DIR__ . '/setup.php';
+
+ini_set('display_errors', '0');
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -13,6 +15,17 @@ function respond(array $data, int $status = 200): void {
 $registered_fnc = [];
 
 require_once APP_ROOT . 'api_fnc/stockSummary.php';
+require_once APP_ROOT . 'api_fnc/packagingsList.php';
+require_once APP_ROOT . 'api_fnc/packagingSave.php';
+require_once APP_ROOT . 'api_fnc/buyerSave.php';
+require_once APP_ROOT . 'api_fnc/buyersList.php';
+require_once APP_ROOT . 'api_fnc/contractorsList.php';
+require_once APP_ROOT . 'api_fnc/contractorSave.php';
+require_once APP_ROOT . 'api_fnc/bullsFilters.php';
+require_once APP_ROOT . 'api_fnc/bullsList.php';
+require_once APP_ROOT . 'api_fnc/bullForm.php';
+require_once APP_ROOT . 'api_fnc/bullSave.php';
+require_once APP_ROOT . 'api_fnc/bullSearch.php';
 
 //защита от CSRF
 $contentType = $_SERVER['CONTENT_TYPE'] ?? '';

@@ -29,8 +29,24 @@ function log_error(Throwable $e): void {
 	file_put_contents(APP_ROOT . 'logs/api.log', $line, FILE_APPEND | LOCK_EX);
 }
 
-function fail(string $message): array {
-	return ['success' => false, 'error' => $message];
+function fail(string $message, array $fields = []): array {
+	$result = ['success' => false, 'error' => $message];
+	if ($fields) {
+		$result['fields'] = $fields;
+	}
+	return $result;
+}
+
+function transaction(callable $work) {
+	db()->beginTransaction();
+	try {
+		$result = $work();
+		db()->commit();
+		return $result;
+	} catch (Throwable $e) {
+		db()->rollBack();
+		throw $e;
+	}
 }
 
 function parse_date($value): ?string {
@@ -47,6 +63,11 @@ function optional_id($value): ?int {
 	}
 	$id = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 	return $id === false ? null : $id;
+}
+
+function str_field(array $post, string $key): string {
+	$value = $post[$key] ?? '';
+	return is_scalar($value) ? trim((string) $value) : '';
 }
 
 ?>

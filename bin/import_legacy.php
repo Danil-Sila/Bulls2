@@ -25,15 +25,17 @@ $steps = [
 	'breeds' => "INSERT INTO breeds (id, name)
 		SELECT breed_id, TRIM(breed_name) FROM $old.breeds",
 
+	// В старых адресах часть букв набрана латиницей (H вместо Н, p вместо р) — поиск по «южный» не находил «ЮЖHЫЙ».
+	// Других латинских букв и названий целиком на латинице в адресах нет.
 	'contractors' => "INSERT INTO contractors (id, name, location)
-		SELECT c.contr_id, TRIM(c.name), NULLIF(CONCAT_WS(', ', l1.Name, l2.Name, l3.Name), '')
+		SELECT c.contr_id, TRIM(c.name), NULLIF(REPLACE(REPLACE(CONCAT_WS(', ', l1.Name, l2.Name, l3.Name), 'H', 'Н'), 'p', 'р'), '')
 		FROM $old.contr c
 		LEFT JOIN $old.llocations l1 ON l1.ID = c.loc_id
 		LEFT JOIN $old.llocations l2 ON l2.ID = l1.IDT2
 		LEFT JOIN $old.llocations l3 ON l3.ID = l1.IDT1",
 
 	'buyers' => "INSERT INTO buyers (id, name, location)
-		SELECT b.buyer_id, TRIM(b.name), NULLIF(CONCAT_WS(', ', l1.Name, l2.Name, l3.Name), '')
+		SELECT b.buyer_id, TRIM(b.name), NULLIF(REPLACE(REPLACE(CONCAT_WS(', ', l1.Name, l2.Name, l3.Name), 'H', 'Н'), 'p', 'р'), '')
 		FROM $old.buyers b
 		LEFT JOIN $old.llocations l1 ON l1.ID = b.loc_id
 		LEFT JOIN $old.llocations l2 ON l2.ID = l1.IDParent

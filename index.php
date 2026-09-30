@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../setup.php';
+require __DIR__ . '/setup.php';
 
 $title = 'Главная';
 $page = 'index.php';
@@ -9,6 +9,11 @@ require APP_ROOT . 'views/header.php';
 ?>
 
 <h1 class="h3 mb-3">Главная</h1>
+
+<form action="bulls.php" method="get" role="search" class="position-relative mb-4">
+	<input type="search" id="bullSearch" name="search" class="form-control form-control-lg" placeholder="Номер или кличка быка" autocomplete="off" aria-label="Поиск быка">
+	<div id="bullSuggest" class="list-group position-absolute w-100 shadow mt-1 z-3" hidden></div>
+</form>
 
 <div id="error" class="alert alert-danger" role="alert" hidden></div>
 
