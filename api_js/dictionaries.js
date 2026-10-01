@@ -81,6 +81,7 @@ function dictionarySection(config) {
 	tfoot.append(newRow);
 	const table = el('table', 'table table-sm align-middle mb-0');
 	table.append(thead, rows, tfoot);
+	table.addEventListener('input', event => clearFieldError(event.target));
 	const wrap = el('div', 'table-responsive');
 	wrap.append(table);
 	const card = el('section', 'card mb-4');

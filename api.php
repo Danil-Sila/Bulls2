@@ -26,6 +26,12 @@ require_once APP_ROOT . 'api_fnc/bullsList.php';
 require_once APP_ROOT . 'api_fnc/bullForm.php';
 require_once APP_ROOT . 'api_fnc/bullSave.php';
 require_once APP_ROOT . 'api_fnc/bullSearch.php';
+require_once APP_ROOT . 'api_fnc/salesFilters.php';
+require_once APP_ROOT . 'api_fnc/salesList.php';
+require_once APP_ROOT . 'api_fnc/saleForm.php';
+require_once APP_ROOT . 'api_fnc/saleSave.php';
+require_once APP_ROOT . 'api_fnc/stockAvailable.php';
+require_once APP_ROOT . 'api_fnc/saleDelete.php';
 
 //защита от CSRF
 $contentType = $_SERVER['CONTENT_TYPE'] ?? '';

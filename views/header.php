@@ -2,6 +2,7 @@
 $menu = [
 	'index.php'		=> 'Главная',
 	'bulls.php'		=> 'Быки',
+	'sales.php'		=> 'Продажи',
 	'Справочники'	=> [
 		'contractors.php' => 'Контрагенты',
 		'buyers.php'	  => 'Покупатели',

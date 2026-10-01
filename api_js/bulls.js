@@ -184,8 +184,7 @@ function fillOptions(select, items, placeholder, current, label = item => item.n
 function clearFormErrors() {
 	showError(editor.error, '');
 	for (const input of Object.values(fields)) {
-		input.classList.remove('is-invalid');
-		input.nextElementSibling.textContent = '';
+		clearFieldError(input);
 	}
 }
 
@@ -262,6 +261,7 @@ view.next.addEventListener('click', () => { page++; load(); });
 view.addBull.addEventListener('click', () => openForm(null));
 editor.root.addEventListener('shown.bs.modal', () => fields.num.focus());
 editor.form.addEventListener('submit', saveBull);
+editor.form.addEventListener('input', event => clearFieldError(event.target));
 
 async function start() {
 	const selected = readUrl();

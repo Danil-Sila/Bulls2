@@ -53,6 +53,13 @@ function showError(box, message) {
 	box.hidden = !message;
 }
 
+// Снимает ошибку с поля: красную рамку и текст в блоке invalid-feedback сразу за полем
+function clearFieldError(input) {
+	if (!input.classList.contains('is-invalid')) return;
+	input.classList.remove('is-invalid');
+	input.nextElementSibling.textContent = '';
+}
+
 function toast(message, type = 'success') {
 	let box = document.getElementById('toasts');
 	if (!box) {

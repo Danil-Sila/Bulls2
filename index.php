@@ -15,6 +15,10 @@ require APP_ROOT . 'views/header.php';
 	<div id="bullSuggest" class="list-group position-absolute w-100 shadow mt-1 z-3" hidden></div>
 </form>
 
+<div class="d-grid d-sm-flex gap-2 mb-4">
+	<a href="sales.php?add=1" class="btn btn-success btn-lg">+ Продажа</a>
+</div>
+
 <div id="error" class="alert alert-danger" role="alert" hidden></div>
 
 <div class="row g-3">

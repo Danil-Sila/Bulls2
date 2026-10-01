@@ -70,4 +70,12 @@ function str_field(array $post, string $key): string {
 	return is_scalar($value) ? trim((string) $value) : '';
 }
 
+function default_storage_id(): int {
+	$ids = db()->query('SELECT id FROM storages ORDER BY id')->fetchAll(PDO::FETCH_COLUMN);
+	if (count($ids) !== 1) {
+		throw new RuntimeException('Формы рассчитаны на один склад, а в справочнике их ' . count($ids));
+	}
+	return (int) $ids[0];
+}
+
 ?>
