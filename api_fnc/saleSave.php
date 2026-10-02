@@ -26,7 +26,7 @@ function saleSave(array $post): array {
 		$errors['packaging_id'] = 'Выберите упаковку';
 	}
 	if ($doses === false) {
-		$errors['doses'] = 'Целое число доз';
+		$errors['doses'] = 'Введите целое число доз';
 	}
 	if ($errors) {
 		return fail('Проверьте поля', $errors);
@@ -65,6 +65,6 @@ function saleSave(array $post): array {
 	});
 }
 
-$registered_fnc[] = 'saleSave'
+$registered_fnc[] = 'saleSave';
 
 ?>

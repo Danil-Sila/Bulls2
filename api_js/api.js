@@ -48,6 +48,19 @@ function plural(n, one, few, many) {
 	return many;
 }
 
+function formatDoses(n) {
+	return `${formatNumber(n)} ${plural(Math.abs(n), 'доза', 'дозы', 'доз')}`;
+}
+
+// Последние days дней. Через setDate, а не setMonth: 31 марта минус месяц «переползает»
+// на начало марта (31 февраля не бывает)
+function defaultPeriod(days) {
+	const to = new Date();
+	const from = new Date(to);
+	from.setDate(from.getDate() - days);
+	return { from: isoDate(from), to: isoDate(to) };
+}
+
 function showError(box, message) {
 	box.textContent = message;
 	box.hidden = !message;
@@ -58,6 +71,41 @@ function clearFieldError(input) {
 	if (!input.classList.contains('is-invalid')) return;
 	input.classList.remove('is-invalid');
 	input.nextElementSibling.textContent = '';
+}
+
+function clearFormErrors(fields, errorBox) {
+	showError(errorBox, '');
+	for (const input of Object.values(fields)) {
+		clearFieldError(input);
+	}
+}
+
+function showFormErrors(fields, errors) {
+	for (const [key, input] of Object.entries(fields)) {
+		const message = errors[key] || '';
+		input.classList.toggle('is-invalid', message !== '');
+		input.nextElementSibling.textContent = message;
+	}
+}
+
+function setSelect(select, value, fallback = '') {
+	select.value = value;
+	if (select.selectedIndex === -1) select.value = fallback;
+}
+
+// Показывает активные значения и текущее, даже если оно уже в архиве
+function fillOptions(select, items, placeholder, current, label = item => item.name) {
+	const empty = el('option', '', placeholder);
+	empty.value = '';
+	select.replaceChildren(empty);
+	for (const item of items) {
+		const archived = item.is_active === 0;
+		if (archived && item.id !== current) continue;
+		const option = el('option', '', archived ? `${label(item)} (архив)` : label(item));
+		option.value = item.id;
+		select.append(option);
+	}
+	select.value = current ?? '';
 }
 
 function toast(message, type = 'success') {

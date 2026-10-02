@@ -62,11 +62,6 @@ function writeUrl() {
 	history.replaceState(null, '', query ? `?${query}` : location.pathname);
 }
 
-function setSelect(select, value, fallback) {
-	select.value = value;
-	if (select.selectedIndex === -1) select.value = fallback;
-}
-
 function fillSelect(select, items) {
 	for (const item of items) {
 		const option = el('option', '', item.name);
@@ -166,28 +161,6 @@ async function loadFormLists() {
 	return formLists;
 }
 
-// Показывает активные значения и текущее, даже если оно уже в архиве
-function fillOptions(select, items, placeholder, current, label = item => item.name) {
-	const empty = el('option', '', placeholder);
-	empty.value = '';
-	select.replaceChildren(empty);
-	for (const item of items) {
-		const archived = item.is_active === 0;
-		if (archived && item.id !== current) continue;
-		const option = el('option', '', archived ? `${label(item)} (архив)` : label(item));
-		option.value = item.id;
-		select.append(option);
-	}
-	select.value = current ?? '';
-}
-
-function clearFormErrors() {
-	showError(editor.error, '');
-	for (const input of Object.values(fields)) {
-		clearFieldError(input);
-	}
-}
-
 // bull === null — добавление, иначе правка строки списка
 async function openForm(bull) {
 	let lists;
@@ -198,7 +171,7 @@ async function openForm(bull) {
 		return;
 	}
 	editingId = bull ? bull.id : null;
-	clearFormErrors();
+	clearFormErrors(fields, editor.error);
 	editor.title.textContent = bull ? `Бык ${bull.name}, № ${bull.num}` : 'Новый бык';
 	editor.submit.textContent = bull ? 'Сохранить' : 'Добавить';
 	fields.num.value = bull?.num ?? '';
@@ -224,14 +197,6 @@ function readFormValues() {
 	return values;
 }
 
-function showFormErrors(errors) {
-	for (const [key, input] of Object.entries(fields)) {
-		const message = errors[key] || '';
-		input.classList.toggle('is-invalid', message !== '');
-		input.nextElementSibling.textContent = message;
-	}
-}
-
 async function saveBull(event) {
 	event.preventDefault();
 	editor.submit.disabled = true;
@@ -239,7 +204,7 @@ async function saveBull(event) {
 		await callApi('bullSave', readFormValues());
 	} catch (error) {
 		const errors = error.fields || {};
-		showFormErrors(errors);
+		showFormErrors(fields, errors);
 		showError(editor.error, Object.keys(errors).length > 0 ? '' : error.message);
 		return;
 	} finally {

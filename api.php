@@ -32,6 +32,11 @@ require_once APP_ROOT . 'api_fnc/saleForm.php';
 require_once APP_ROOT . 'api_fnc/saleSave.php';
 require_once APP_ROOT . 'api_fnc/stockAvailable.php';
 require_once APP_ROOT . 'api_fnc/saleDelete.php';
+require_once APP_ROOT . 'api_fnc/receiptsFilters.php';
+require_once APP_ROOT . 'api_fnc/receiptsList.php';
+require_once APP_ROOT . 'api_fnc/receiptForm.php';
+require_once APP_ROOT . 'api_fnc/receiptSave.php';
+require_once APP_ROOT . 'api_fnc/receiptDelete.php';
 
 //защита от CSRF
 $contentType = $_SERVER['CONTENT_TYPE'] ?? '';

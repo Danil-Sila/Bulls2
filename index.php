@@ -17,6 +17,7 @@ require APP_ROOT . 'views/header.php';
 
 <div class="d-grid d-sm-flex gap-2 mb-4">
 	<a href="sales.php?add=1" class="btn btn-success btn-lg">+ Продажа</a>
+	<a href="receipts.php?add=1" class="btn btn-success btn-lg">+ Поступление</a>
 </div>
 
 <div id="error" class="alert alert-danger" role="alert" hidden></div>

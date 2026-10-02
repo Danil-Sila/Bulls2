@@ -39,18 +39,6 @@ let editingId = null;
 let available = null;
 let stockRequest = 0;
 
-// 30 дней, а не setMonth(-1): 31 марта минус месяц «переползает» на начало марта (31 февраля не бывает)
-function defaultPeriod() {
-	const to = new Date();
-	const from = new Date(to);
-	from.setDate(from.getDate() - 30);
-	return { from: isoDate(from), to: isoDate(to) };
-}
-
-function doses(n) {
-	return `${formatNumber(n)} ${plural(Math.abs(n), 'доза', 'дозы', 'доз')}`;
-}
-
 function renderRow(sale) {
 	const bull = el('td');
 	bull.append(el('span', 'fw-medium', sale.bull), el('span', 'text-body-secondary ms-1', sale.bull_num));
@@ -83,7 +71,7 @@ function renderRow(sale) {
 
 function render(data) {
 	const n = data.total_rows;
-	view.summary.textContent = `${formatNumber(n)} ${plural(n, 'продажа', 'продажи', 'продаж')}, ${doses(data.total_doses)} за период`;
+	view.summary.textContent = `${formatNumber(n)} ${plural(n, 'продажа', 'продажи', 'продаж')}, ${formatDoses(data.total_doses)} за период`;
 	if (n === 0) {
 		const td = el('td', 'text-center text-body-secondary py-4', 'За выбранный период продаж нет — измените период или фильтры');
 		td.colSpan = 9;
@@ -126,7 +114,7 @@ async function load() {
 
 function readUrl() {
 	const q = new URLSearchParams(location.search);
-	const period = defaultPeriod();
+	const period = defaultPeriod(30);
 	form.dateFrom.value = q.get('from') || period.from;
 	form.dateTo.value = q.get('to') || period.to;
 	page = Number(q.get('page')) || 1;
@@ -139,11 +127,6 @@ function writeUrl() {
 	if (form.bull.value) q.set('bull', form.bull.value);
 	if (page > 1) q.set('page', page);
 	history.replaceState(null, '', `?${q}`);
-}
-
-function setSelect(select, value) {
-	select.value = value;
-	if (select.selectedIndex === -1) select.value = '';
 }
 
 function fillSelect(select, items, label) {
@@ -164,28 +147,6 @@ async function loadFormLists() {
 	return formLists;
 }
 
-// Показывает активные значения и текущее, даже если оно уже в архиве
-function fillOptions(select, items, placeholder, current, label = item => item.name) {
-	const empty = el('option', '', placeholder);
-	empty.value = '';
-	select.replaceChildren(empty);
-	for (const item of items) {
-		const archived = item.is_active === 0;
-		if (archived && item.id !== current) continue;
-		const option = el('option', '', archived ? `${label(item)} (архив)` : label(item));
-		option.value = item.id;
-		select.append(option);
-	}
-	select.value = current ?? '';
-}
-
-function clearFormErrors() {
-	showError(editor.error, '');
-	for (const input of Object.values(fields)) {
-		clearFieldError(input);
-	}
-}
-
 function renderStockHint() {
 	if (available === null) {
 		editor.stock.textContent = '';
@@ -197,8 +158,8 @@ function renderStockHint() {
 	const overdraw = Number.isInteger(entered) && entered > 0 && after < 0;
 	editor.stock.classList.toggle('text-danger', overdraw || available < 0);
 	editor.stock.textContent = overdraw
-		? `Доступно: ${doses(available)}. После продажи остаток станет ${doses(after)}`
-		: `Доступно: ${doses(available)}`;
+		? `Доступно: ${formatDoses(available)}. После продажи остаток станет ${formatDoses(after)}`
+		: `Доступно: ${formatDoses(available)}`;
 }
 
 async function updateStockHint() {
@@ -232,7 +193,7 @@ async function openForm(sale) {
 		return;
 	}
 	editingId = sale ? sale.id : null;
-	clearFormErrors();
+	clearFormErrors(fields, editor.error);
 	editor.title.textContent = sale ? `Продажа № ${sale.id}` : 'Новая продажа';
 	editor.submit.textContent = sale ? 'Сохранить' : 'Добавить';
 	fields.sold_on.value = sale ? sale.sold_on : isoDate(new Date());
@@ -253,14 +214,6 @@ function readFormValues() {
 	return values;
 }
 
-function showFormErrors(errors) {
-	for (const [key, input] of Object.entries(fields)) {
-		const message = errors[key] || '';
-		input.classList.toggle('is-invalid', message !== '');
-		input.nextElementSibling.textContent = message;
-	}
-}
-
 async function saveSale(event) {
 	event.preventDefault();
 	editor.submit.disabled = true;
@@ -268,7 +221,7 @@ async function saveSale(event) {
 		await callApi('saleSave', readFormValues());
 	} catch (error) {
 		const errors = error.fields || {};
-		showFormErrors(errors);
+		showFormErrors(fields, errors);
 		showError(editor.error, Object.keys(errors).length > 0 ? '' : error.message);
 		return;
 	} finally {
@@ -280,7 +233,7 @@ async function saveSale(event) {
 }
 
 async function deleteSale(sale) {
-	const text = `Удалить продажу от ${formatDate(sale.sold_on)}: ${sale.buyer}, ${sale.bull} · ${sale.bull_num}, ${doses(sale.doses)}? Она уйдёт в корзину.`;
+	const text = `Удалить продажу от ${formatDate(sale.sold_on)}: ${sale.buyer}, ${sale.bull} · ${sale.bull_num}, ${formatDoses(sale.doses)}? Она уйдёт в корзину.`;
 	if (!await confirmDialog(text)) return;
 	try {
 		await callApi('saleDelete', { id: sale.id });

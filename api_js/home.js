@@ -10,10 +10,6 @@ const view = {
 };
 let lastSearch = 0;
 
-function doses(n) {
-	return `${formatNumber(n)} ${plural(Math.abs(n), 'доза', 'дозы', 'доз')}`;
-}
-
 function positions(n) {
 	return `${formatNumber(n)} ${plural(n, 'позиция', 'позиции', 'позиций')}`;
 }
@@ -21,9 +17,9 @@ function positions(n) {
 async function loadSummary() {
 	try {
 		const data = await callApi('stockSummary');
-		view.stockDoses.textContent = doses(data.doses);
+		view.stockDoses.textContent = formatDoses(data.doses);
 		view.stockPositions.textContent = positions(data.positions - data.negative_positions);
-		view.negativeDoses.textContent = doses(data.negative_doses);
+		view.negativeDoses.textContent = formatDoses(data.negative_doses);
 		view.negativePositions.textContent = positions(data.negative_positions);
 		view.negative.hidden = data.negative_positions === 0;
 	} catch (error) {
@@ -43,7 +39,7 @@ function suggestionRow(bull) {
 		el('span', 'text-body-secondary ms-2', bull.num),
 		el('span', 'text-body-secondary ms-2 d-none d-sm-inline', bull.breed),
 	);
-	const stock = el('span', 'num text-nowrap', bull.stock === null ? 'нет' : doses(bull.stock));
+	const stock = el('span', 'num text-nowrap', bull.stock === null ? 'нет' : formatDoses(bull.stock));
 	if (bull.stock === null) {
 		stock.classList.add('text-body-secondary');
 	} else if (bull.stock < 0) {
