@@ -12,7 +12,7 @@ function salesList(array $post): array {
 		return fail('Дата «с» позже даты «по»');
 	}
 
-	$where = 's.deleted_at IS NULL AND s.sold_on BETWEEN :date_from AND :date_to';
+	$where = 's.sold_on BETWEEN :date_from AND :date_to';
 	$params = ['date_from' => $from, 'date_to' => $to];
 
 	$buyerId = optional_id($post['buyer_id'] ?? null);

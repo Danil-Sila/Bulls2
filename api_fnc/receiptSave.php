@@ -40,8 +40,8 @@ function receiptSave(array $post): array {
 			return ['success' => true, 'id' => (int) db()->lastInsertId()];
 		}
 
-		// Поступление из корзины править нельзя: сначала его восстанавливают
-		$found = db()->prepare('SELECT COUNT(*) FROM receipts WHERE id = :id AND deleted_at IS NULL');
+		// Пока форма была открыта, поступление могли удалить в другой вкладке
+		$found = db()->prepare('SELECT COUNT(*) FROM receipts WHERE id = :id');
 		$found->execute(['id' => $id]);
 		if ($found->fetchColumn() === 0) {
 			return fail('Поступление не найдено. Обновите страницу');

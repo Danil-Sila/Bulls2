@@ -233,7 +233,7 @@ async function saveSale(event) {
 }
 
 async function deleteSale(sale) {
-	const text = `Удалить продажу от ${formatDate(sale.sold_on)}: ${sale.buyer}, ${sale.bull} · ${sale.bull_num}, ${formatDoses(sale.doses)}? Она уйдёт в корзину.`;
+	const text = `Удалить продажу от ${formatDate(sale.sold_on)}: ${sale.buyer}, ${sale.bull} · ${sale.bull_num}, ${formatDoses(sale.doses)}? Это действие нельзя отменить.`;
 	if (!await confirmDialog(text)) return;
 	try {
 		await callApi('saleDelete', { id: sale.id });
@@ -241,7 +241,7 @@ async function deleteSale(sale) {
 		toast(`Не удалось удалить: ${error.message}`, 'danger');
 		return;
 	}
-	toast('Продажа перенесена в корзину');
+	toast('Продажа удалена');
 	load();
 }
 

@@ -12,7 +12,7 @@ function receiptsList(array $post): array {
 		return fail('Дата «с» позже даты «по»');
 	}
 
-	$where = 'r.deleted_at IS NULL AND r.received_on BETWEEN :date_from AND :date_to';
+	$where = 'r.received_on BETWEEN :date_from AND :date_to';
 	$params = ['date_from' => $from, 'date_to' => $to];
 
 	$bullId = optional_id($post['bull_id'] ?? null);

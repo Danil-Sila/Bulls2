@@ -77,7 +77,6 @@ CREATE TABLE receipts (
 	doses        INT UNSIGNED NOT NULL,
 	created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	deleted_at   DATETIME     NULL,
 	KEY ix_receipts_received_on (received_on),
 	CONSTRAINT chk_receipts_doses    CHECK (doses > 0),
 	CONSTRAINT fk_receipts_storage   FOREIGN KEY (storage_id)   REFERENCES storages (id)   ON DELETE RESTRICT,
@@ -97,7 +96,6 @@ CREATE TABLE sales (
 	doses         INT UNSIGNED NOT NULL,
 	created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	deleted_at    DATETIME     NULL,
 	KEY ix_sales_sold_on (sold_on),
 	CONSTRAINT chk_sales_doses     CHECK (doses > 0),
 	CONSTRAINT fk_sales_buyer      FOREIGN KEY (buyer_id)      REFERENCES buyers (id)      ON DELETE RESTRICT,
@@ -107,13 +105,13 @@ CREATE TABLE sales (
 	CONSTRAINT fk_sales_packaging  FOREIGN KEY (packaging_id)  REFERENCES packagings (id)  ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ОСТАТОК: поступления минус продажи, без удалённых в корзину --
+-- ОСТАТОК: поступления минус продажи --
 CREATE VIEW stock_balance AS
 SELECT m.storage_id, m.bull_id, m.packaging_id, SUM(m.doses) AS doses
 FROM (
-	SELECT storage_id, bull_id, packaging_id, CAST(doses AS SIGNED) AS doses FROM receipts WHERE deleted_at IS NULL
+	SELECT storage_id, bull_id, packaging_id, CAST(doses AS SIGNED) AS doses FROM receipts
 	UNION ALL
-	SELECT storage_id, bull_id, packaging_id, -CAST(doses AS SIGNED) FROM sales WHERE deleted_at IS NULL
+	SELECT storage_id, bull_id, packaging_id, -CAST(doses AS SIGNED) FROM sales
 ) AS m
 GROUP BY m.storage_id, m.bull_id, m.packaging_id
 HAVING SUM(m.doses) <> 0;

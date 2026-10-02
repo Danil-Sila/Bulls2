@@ -7,10 +7,10 @@ function saleDelete(array $post): array {
 	}
 
 	return transaction(function () use ($id) {
-		// Одним запросом и проверка, и перенос в корзину: между ними никто не успеет вклиниться
-		$moved = db()->prepare('UPDATE sales SET deleted_at = NOW() WHERE id = :id AND deleted_at IS NULL');
-		$moved->execute(['id' => $id]);
-		if ($moved->rowCount() === 0) {
+		// Одним запросом и проверка, и удаление: между ними никто не успеет вклиниться
+		$deleted = db()->prepare('DELETE FROM sales WHERE id = :id');
+		$deleted->execute(['id' => $id]);
+		if ($deleted->rowCount() === 0) {
 			return fail('Продажа не найдена или уже удалена. Обновите страницу');
 		}
 		return ['success' => true, 'id' => $id];

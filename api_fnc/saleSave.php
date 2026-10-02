@@ -50,8 +50,8 @@ function saleSave(array $post): array {
 			return ['success' => true, 'id' => (int) db()->lastInsertId()];
 		}
 
-		// Продажу из корзины править нельзя: сначала её восстанавливают
-		$found = db()->prepare('SELECT COUNT(*) FROM sales WHERE id = :id AND deleted_at IS NULL');
+		// Пока форма была открыта, продажу могли удалить в другой вкладке
+		$found = db()->prepare('SELECT COUNT(*) FROM sales WHERE id = :id');
 		$found->execute(['id' => $id]);
 		if ($found->fetchColumn() === 0) {
 			return fail('Продажа не найдена. Обновите страницу');

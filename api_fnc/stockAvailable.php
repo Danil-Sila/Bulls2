@@ -16,7 +16,7 @@ function stockAvailable(array $post): array {
 	if ($saleId !== null) {
 		$own = db()->prepare(
 			'SELECT COALESCE(SUM(doses), 0) FROM sales
-			 WHERE id = :id AND bull_id = :bull_id AND packaging_id = :packaging_id AND deleted_at IS NULL'
+			 WHERE id = :id AND bull_id = :bull_id AND packaging_id = :packaging_id'
 		);
 		$own->execute(['id' => $saleId, 'bull_id' => $bullId, 'packaging_id' => $packagingId]);
 		$doses += (int) $own->fetchColumn();

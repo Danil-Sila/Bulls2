@@ -185,7 +185,7 @@ async function saveReceipt(event) {
 }
 
 async function deleteReceipt(receipt) {
-	const text = `Удалить поступление от ${formatDate(receipt.received_on)}: ${receipt.bull} · ${receipt.bull_num}, ${formatDoses(receipt.doses)}? Оно уйдёт в корзину.`;
+	const text = `Удалить поступление от ${formatDate(receipt.received_on)}: ${receipt.bull} · ${receipt.bull_num}, ${formatDoses(receipt.doses)}? Это действие нельзя отменить.`;
 	if (!await confirmDialog(text)) return;
 	try {
 		await callApi('receiptDelete', { id: receipt.id });
@@ -193,7 +193,7 @@ async function deleteReceipt(receipt) {
 		toast(`Не удалось удалить: ${error.message}`, 'danger');
 		return;
 	}
-	toast('Поступление перенесено в корзину');
+	toast('Поступление удалено');
 	load();
 }
 

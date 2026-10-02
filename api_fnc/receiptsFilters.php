@@ -7,7 +7,7 @@ function receiptsFilters(array $post): array {
 		'bulls'   => db()->query(
 			'SELECT b.id, b.num, b.name, b.is_active
 			 FROM bulls b
-			 WHERE EXISTS (SELECT 1 FROM receipts r WHERE r.bull_id = b.id AND r.deleted_at IS NULL)
+			 WHERE EXISTS (SELECT 1 FROM receipts r WHERE r.bull_id = b.id)
 			 ORDER BY b.name, b.num, b.id'
 		)->fetchAll(),
 	];
