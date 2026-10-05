@@ -23,7 +23,7 @@ function reportBuyers(array $post): array {
 		'success' => true,
 		'columns' => [
 			['key' => 'buyer',     'title' => 'Покупатель', 'type' => 'text'],
-			['key' => 'location',  'title' => 'Место',      'type' => 'text'],
+			['key' => 'location',  'title' => 'Место',      'type' => 'text', 'wrap' => true],
 			['key' => 'doses',     'title' => 'Доз',        'type' => 'number'],
 			['key' => 'purchases', 'title' => 'Покупок',    'type' => 'number'],
 		],

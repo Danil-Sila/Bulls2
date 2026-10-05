@@ -70,6 +70,7 @@ function showError(box, message) {
 function clearFieldError(input) {
 	if (!input.classList.contains('is-invalid')) return;
 	input.classList.remove('is-invalid');
+	input.pickerInput?.classList.remove('is-invalid');
 	input.nextElementSibling.textContent = '';
 }
 
@@ -84,6 +85,7 @@ function showFormErrors(fields, errors) {
 	for (const [key, input] of Object.entries(fields)) {
 		const message = errors[key] || '';
 		input.classList.toggle('is-invalid', message !== '');
+		input.pickerInput?.classList.toggle('is-invalid', message !== '');
 		input.nextElementSibling.textContent = message;
 	}
 }
@@ -106,6 +108,17 @@ function fillOptions(select, items, placeholder, current, label = item => item.n
 		select.append(option);
 	}
 	select.value = current ?? '';
+}
+
+// Подписи ячеек для карточек на телефоне (css/app.css, .table-cards) берутся из заголовков таблицы
+function labelCells(tbody) {
+	const labels = [...tbody.closest('table').tHead.rows[0].cells].map(th => th.textContent);
+	for (const row of tbody.rows) {
+		if (row.cells.length !== labels.length) continue;
+		for (const [i, td] of [...row.cells].entries()) {
+			if (labels[i]) td.dataset.label = labels[i];
+		}
+	}
 }
 
 function toast(message, type = 'success') {

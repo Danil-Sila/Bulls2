@@ -3,7 +3,7 @@ require __DIR__ . '/setup.php';
 
 $title = 'Продажи';
 $page = 'sales.php';
-$scripts = ['sales.js'];
+$scripts = ['picker.js', 'sales.js'];
 require APP_ROOT . 'views/header.php';
 ?>
 
@@ -38,7 +38,7 @@ require APP_ROOT . 'views/header.php';
 
 <div class="card">
 	<div class="table-responsive">
-		<table class="table table-hover table-sm align-middle mb-0">
+		<table class="table table-cards table-hover table-sm align-middle mb-0">
 			<thead class="table-light">
 				<tr>
 					<th scope="col">Дата</th>

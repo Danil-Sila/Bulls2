@@ -180,7 +180,7 @@ function renderCell(column, value) {
 	if (column.type === 'number') {
 		return el('td', value < 0 ? 'text-end num text-danger' : 'text-end num', formatNumber(value));
 	}
-	return el('td', '', String(value));
+	return el('td', column.wrap ? 'wrap' : '', String(value));
 }
 
 function renderRow(columns, row) {

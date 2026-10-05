@@ -27,7 +27,7 @@ function reportVendors(array $post): array {
 		'success' => true,
 		'columns' => [
 			['key' => 'vendor',    'title' => 'Производитель', 'type' => 'text'],
-			['key' => 'suppliers', 'title' => 'Поставщики',    'type' => 'text'],
+			['key' => 'suppliers', 'title' => 'Поставщики',    'type' => 'text', 'wrap' => true],
 			['key' => 'doses',     'title' => 'Доз',           'type' => 'number'],
 			['key' => 'purchases', 'title' => 'Покупок',       'type' => 'number'],
 		],

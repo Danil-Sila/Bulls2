@@ -40,7 +40,7 @@ function reportStock(array $post): array {
 		'columns' => [
 			['key' => 'bull',      'title' => 'Кличка',        'type' => 'text'],
 			['key' => 'num',       'title' => 'Номер',         'type' => 'text'],
-			['key' => 'vendor',    'title' => 'Производитель', 'type' => 'text'],
+			['key' => 'vendor',    'title' => 'Производитель', 'type' => 'text', 'wrap' => true],
 			['key' => 'packaging', 'title' => 'Упаковка',      'type' => 'text'],
 			['key' => 'doses',     'title' => 'Доз',           'type' => 'number'],
 		],

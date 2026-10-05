@@ -126,8 +126,8 @@ function renderRow(bull) {
 		name,
 		el('td', '', bull.breed),
 		el('td', '', categoryText(bull)),
-		el('td', 'wrap', bull.vendor ?? ''),
-		el('td', 'wrap', bull.supplier),
+		el('td', 'wrap phone-hide', bull.vendor ?? ''),
+		el('td', 'wrap phone-hide', bull.supplier),
 		stock,
 		actions,
 	);
@@ -146,6 +146,7 @@ function render(data) {
 	} else {
 		view.rows.replaceChildren(...data.rows.map(renderRow));
 	}
+	labelCells(view.rows);
 	view.pageInfo.textContent = `Страница ${data.page} из ${data.pages}`;
 	view.prev.disabled = data.page <= 1;
 	view.next.disabled = data.page >= data.pages;

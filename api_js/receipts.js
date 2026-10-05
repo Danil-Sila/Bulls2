@@ -27,6 +27,8 @@ const editor = {
 	submit: document.getElementById('receiptSubmit'),
 };
 const receiptModal = bootstrap.Modal.getOrCreateInstance(editor.root);
+const bullPicker = searchSelect(fields.bull_id);
+const bullFilter = searchSelect(form.bull, 'Все быки');
 
 let page = 1;
 let lastRequest = 0;
@@ -52,10 +54,10 @@ function renderRow(receipt) {
 	tr.append(
 		el('td', 'num', formatDate(receipt.received_on)),
 		bull,
-		el('td', '', receipt.breed),
+		el('td', 'phone-hide', receipt.breed),
 		el('td', 'text-end num fw-semibold', formatNumber(receipt.doses)),
 		el('td', '', receipt.packaging),
-		el('td', 'text-end num text-body-secondary', receipt.id),
+		el('td', 'text-end num text-body-secondary phone-hide', receipt.id),
 		actions,
 	);
 	return tr;
@@ -73,6 +75,7 @@ function render(data) {
 	} else {
 		view.rows.replaceChildren(...data.rows.map(renderRow));
 	}
+	labelCells(view.rows);
 	view.pageInfo.textContent = `Страница ${data.page} из ${data.pages}`;
 	view.prev.disabled = data.page <= 1;
 	view.next.disabled = data.page >= data.pages;
@@ -155,6 +158,7 @@ async function openForm(receipt) {
 	fields.doses.value = receipt ? receipt.doses : '';
 	fillOptions(fields.bull_id, lists.bulls, '— выберите —', receipt?.bull_id, b => `${b.name} · ${b.num}`);
 	fillOptions(fields.packaging_id, lists.packagings, '— выберите —', receipt?.packaging_id);
+	bullPicker.sync();
 	receiptModal.show();
 }
 
@@ -205,7 +209,7 @@ form.bull.addEventListener('change', reload);
 view.prev.addEventListener('click', () => { page--; load(); });
 view.next.addEventListener('click', () => { page++; load(); });
 view.addReceipt.addEventListener('click', () => openForm(null));
-editor.root.addEventListener('shown.bs.modal', () => fields.bull_id.focus());
+editor.root.addEventListener('shown.bs.modal', () => bullPicker.focus());
 editor.form.addEventListener('submit', saveReceipt);
 editor.form.addEventListener('input', event => clearFieldError(event.target));
 
@@ -215,6 +219,7 @@ async function start() {
 		const filters = await callApi('receiptsFilters');
 		fillSelect(form.bull, filters.bulls, b => `${b.name} · ${b.num}`);
 		setSelect(form.bull, selected.bull);
+		bullFilter.sync();
 	} catch (error) {
 		toast(`Не удалось загрузить список быков: ${error.message}`, 'danger');
 	}

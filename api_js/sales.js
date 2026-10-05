@@ -31,6 +31,10 @@ const editor = {
 	stock: document.getElementById('saleStock'),
 };
 const saleModal = bootstrap.Modal.getOrCreateInstance(editor.root);
+const buyerPicker = searchSelect(fields.buyer_id);
+const bullPicker = searchSelect(fields.bull_id);
+const buyerFilter = searchSelect(form.buyer, 'Все покупатели');
+const bullFilter = searchSelect(form.bull, 'Все быки');
 
 let page = 1;
 let lastRequest = 0;
@@ -41,7 +45,7 @@ let stockRequest = 0;
 
 function renderRow(sale) {
 	const bull = el('td');
-	bull.append(el('span', 'fw-medium', sale.bull), el('span', 'text-body-secondary ms-1', sale.bull_num));
+	bull.append(el('div', 'fw-medium', sale.bull), el('div', 'small text-body-secondary', sale.bull_num));
 
 	const edit = el('button', 'btn btn-sm btn-outline-secondary', 'Изменить');
 	edit.type = 'button';
@@ -59,11 +63,11 @@ function renderRow(sale) {
 		el('td', 'num', formatDate(sale.sold_on)),
 		el('td', 'wrap', sale.buyer),
 		bull,
-		el('td', '', sale.breed),
+		el('td', 'phone-hide', sale.breed),
 		el('td', 'text-end num fw-semibold', formatNumber(sale.doses)),
 		el('td', '', sale.packaging),
 		el('td', 'wrap text-body-secondary', sale.contractor),
-		el('td', 'text-end num text-body-secondary', sale.id),
+		el('td', 'text-end num text-body-secondary phone-hide', sale.id),
 		actions,
 	);
 	return tr;
@@ -81,6 +85,7 @@ function render(data) {
 	} else {
 		view.rows.replaceChildren(...data.rows.map(renderRow));
 	}
+	labelCells(view.rows);
 	view.pageInfo.textContent = `Страница ${data.page} из ${data.pages}`;
 	view.prev.disabled = data.page <= 1;
 	view.next.disabled = data.page >= data.pages;
@@ -202,6 +207,8 @@ async function openForm(sale) {
 	fillOptions(fields.contractor_id, lists.contractors, '— выберите —', sale?.contractor_id);
 	fillOptions(fields.bull_id, lists.bulls, '— выберите —', sale?.bull_id, b => `${b.name} · ${b.num}`);
 	fillOptions(fields.packaging_id, lists.packagings, '— выберите —', sale?.packaging_id);
+	buyerPicker.sync();
+	bullPicker.sync();
 	updateStockHint();
 	saleModal.show();
 }
@@ -255,7 +262,7 @@ for (const field of [form.buyer, form.bull]) {
 view.prev.addEventListener('click', () => { page--; load(); });
 view.next.addEventListener('click', () => { page++; load(); });
 view.addSale.addEventListener('click', () => openForm(null));
-editor.root.addEventListener('shown.bs.modal', () => fields.buyer_id.focus());
+editor.root.addEventListener('shown.bs.modal', () => buyerPicker.focus());
 editor.form.addEventListener('submit', saveSale);
 editor.form.addEventListener('input', event => clearFieldError(event.target));
 fields.bull_id.addEventListener('change', updateStockHint);
@@ -270,6 +277,8 @@ async function start() {
 		fillSelect(form.bull, filters.bulls, b => `${b.name} · ${b.num}`);
 		setSelect(form.buyer, selected.buyer);
 		setSelect(form.bull, selected.bull);
+		buyerFilter.sync();
+		bullFilter.sync();
 	} catch (error) {
 		toast(`Не удалось загрузить списки покупателей и быков: ${error.message}`, 'danger');
 	}
