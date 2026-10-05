@@ -78,4 +78,25 @@ function default_storage_id(): int {
 	return (int) $ids[0];
 }
 
+// Период из запроса: [с, по] или текст ошибки для fail()
+function parse_period(array $post): array|string {
+	$from = parse_date($post['date_from'] ?? null);
+	$to = parse_date($post['date_to'] ?? null);
+	if ($from === null || $to === null) {
+		return 'Укажите период: даты «с» и «по»';
+	}
+	if ($from > $to) {
+		return 'Дата «с» позже даты «по»';
+	}
+	return [$from, $to];
+}
+
+// Итоги отчёта по продажам: сумма доз и число строк
+function report_totals(array $rows): array {
+	return [
+		['label' => 'Итого продано доз', 'value' => array_sum(array_column($rows, 'doses'))],
+		['label' => 'Строк',            'value' => count($rows)],
+	];
+}
+
 ?>

@@ -1,3 +1,16 @@
 .table td, .table th { white-space: nowrap; }
 .table td.wrap { white-space: normal; min-width: 14rem; }
 .num { font-variant-numeric: tabular-nums; }
+
+@page { size: A4 landscape; margin: 10mm; }
+
+@media print {
+	.table td, .table th { white-space: normal; }
+	.table-responsive { overflow: visible; }
+	.table { font-size: 0.75rem; }
+	tr { break-inside: avoid; }
+}
+
+@media (max-width: 1339px) {
+	#result .table td, #result .table th { white-space: normal; }
+}

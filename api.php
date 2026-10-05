@@ -37,6 +37,13 @@ require_once APP_ROOT . 'api_fnc/receiptsList.php';
 require_once APP_ROOT . 'api_fnc/receiptForm.php';
 require_once APP_ROOT . 'api_fnc/receiptSave.php';
 require_once APP_ROOT . 'api_fnc/receiptDelete.php';
+require_once APP_ROOT . 'api_fnc/reportBulls.php';
+require_once APP_ROOT . 'api_fnc/reportVendors.php';
+require_once APP_ROOT . 'api_fnc/reportBuyers.php';
+require_once APP_ROOT . 'api_fnc/reportStock.php';
+require_once APP_ROOT . 'api_fnc/reportMovement.php';
+require_once APP_ROOT . 'api_fnc/reportBullMonths.php';
+require_once APP_ROOT . 'api_fnc/reportBullsFarms.php';
 
 //защита от CSRF
 $contentType = $_SERVER['CONTENT_TYPE'] ?? '';

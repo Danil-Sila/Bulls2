@@ -4,6 +4,7 @@ $menu = [
 	'bulls.php'		=> 'Быки',
 	'receipts.php'	=> 'Поступления',
 	'sales.php'		=> 'Продажи',
+	'reports.php'	=> 'Отчёты',
 	'Справочники'	=> [
 		'contractors.php' => 'Контрагенты',
 		'buyers.php'	  => 'Покупатели',
