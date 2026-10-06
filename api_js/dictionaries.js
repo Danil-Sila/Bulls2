@@ -80,7 +80,11 @@ function dictionarySection(config) {
 	const tfoot = el('tfoot');
 	tfoot.append(newRow);
 	const table = el('table', 'table table-sm align-middle mb-0');
-	table.append(thead, rows, tfoot);
+	table.append(thead, rows);
+	// С формой-редактором строки добавления в таблице нет: «Добавить» открывает форму
+	if (!config.editor) {
+		table.append(tfoot);
+	}
 	table.addEventListener('input', event => clearFieldError(event.target));
 	const wrap = el('div', 'table-responsive');
 	wrap.append(table);
@@ -91,6 +95,7 @@ function dictionarySection(config) {
 	card.append(error);
 
 	let query = '';
+	const toolbar = el('div', 'p-2 border-bottom d-flex gap-2');
 	if (config.search) {
 		const search = el('input', 'form-control form-control-sm');
 		search.type = 'search';
@@ -99,9 +104,15 @@ function dictionarySection(config) {
 			query = search.value.trim().toLowerCase();
 			applyFilter();
 		});
-		const searchBox = el('div', 'p-2 border-bottom');
-		searchBox.append(search);
-		card.append(searchBox);
+		toolbar.append(search);
+	}
+	if (config.editor) {
+		const addButton = smallButton('+ Добавить', 'btn-success text-nowrap');
+		addButton.addEventListener('click', () => config.editor.open(null, load));
+		toolbar.append(addButton);
+	}
+	if (toolbar.children.length > 0) {
+		card.append(toolbar);
 	}
 	card.append(wrap);
 	document.getElementById('dictionaries').append(card);
@@ -121,12 +132,12 @@ function dictionarySection(config) {
 	function renderRow(item) {
 		const tr = el('tr');
 		tr.dataset.search = config.columns
-			.filter(c => !c.readonly && c.type !== 'checkbox')
+			.filter(c => c.searchable ?? (!c.readonly && c.type !== 'checkbox'))
 			.map(c => item[c.name] ?? '')
 			.join(' ')
 			.toLowerCase();
 		const edit = smallButton('Изменить', 'btn-outline-secondary');
-		edit.addEventListener('click', () => editRow(tr, item));
+		edit.addEventListener('click', () => config.editor ? config.editor.open(item, load) : editRow(tr, item));
 		tr.append(
 			el('td', 'text-end num text-body-secondary', item.id),
 			...config.columns.map(c => el('td', c.wrap ? 'wrap' : '', displayValue(c, item[c.name]))),
@@ -176,6 +187,8 @@ function dictionarySection(config) {
 		}
 	});
 
-	resetNewRow();
+	if (!config.editor) {
+		resetNewRow();
+	}
 	load();
 }

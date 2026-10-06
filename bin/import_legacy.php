@@ -25,21 +25,19 @@ $steps = [
 	'breeds' => "INSERT INTO breeds (id, name)
 		SELECT breed_id, TRIM(breed_name) FROM $old.breeds",
 
-	// В старых адресах часть букв набрана латиницей (H вместо Н, p вместо р) — поиск по «южный» не находил «ЮЖHЫЙ».
-	// Других латинских букв и названий целиком на латинице в адресах нет.
-	'contractors' => "INSERT INTO contractors (id, name, location)
-		SELECT c.contr_id, TRIM(c.name), NULLIF(REPLACE(REPLACE(CONCAT_WS(', ', l1.Name, l2.Name, l3.Name), 'H', 'Н'), 'p', 'р'), '')
-		FROM $old.contr c
-		LEFT JOIN $old.llocations l1 ON l1.ID = c.loc_id
-		LEFT JOIN $old.llocations l2 ON l2.ID = l1.IDT2
-		LEFT JOIN $old.llocations l3 ON l3.ID = l1.IDT1",
+	// В старых названиях мест часть букв набрана латиницей (H вместо Н, p вместо р) — поиск по «южный» не находил «ЮЖHЫЙ».
+	// Других латинских букв и названий целиком на латинице в справочнике нет.
+	// Родители вставляются раньше детей (ORDER BY TIER): внешний ключ parent_id проверяется построчно.
+	'locations' => "INSERT INTO locations (id, parent_id, level, name)
+		SELECT ID, IDParent, TIER, TRIM(REPLACE(REPLACE(Name, 'H', 'Н'), 'p', 'р'))
+		FROM $old.llocations
+		ORDER BY TIER, ID",
 
-	'buyers' => "INSERT INTO buyers (id, name, location)
-		SELECT b.buyer_id, TRIM(b.name), NULLIF(REPLACE(REPLACE(CONCAT_WS(', ', l1.Name, l2.Name, l3.Name), 'H', 'Н'), 'p', 'р'), '')
-		FROM $old.buyers b
-		LEFT JOIN $old.llocations l1 ON l1.ID = b.loc_id
-		LEFT JOIN $old.llocations l2 ON l2.ID = l1.IDParent
-		LEFT JOIN $old.llocations l3 ON l3.ID = l2.IDParent",
+	'contractors' => "INSERT INTO contractors (id, name, location_id)
+		SELECT contr_id, TRIM(name), loc_id FROM $old.contr",
+
+	'buyers' => "INSERT INTO buyers (id, name, location_id)
+		SELECT buyer_id, TRIM(name), loc_id FROM $old.buyers",
 
 	'bulls' => "INSERT INTO bulls (id, num, name, breed_id, vendor_id, supplier_id, category_id, category_year)
 		SELECT bull_id, TRIM(num), TRIM(name), breed_id, vendor_id, supplier_id, cur_cat_id, NULLIF(cat_year, 0)
@@ -60,7 +58,8 @@ $pdo->beginTransaction();
 try {
 	// DELETE, а не TRUNCATE: TRUNCATE завершает транзакцию, и откат при ошибке стал бы невозможен.
 	foreach (array_reverse(array_keys($steps)) as $table) {
-		$pdo->exec("DELETE FROM $table");
+		// locations ссылается сама на себя: сначала удаляем нижние уровни, иначе внешний ключ не даст удалить родителя.
+		$pdo->exec("DELETE FROM $table" . ($table === 'locations' ? ' ORDER BY level DESC' : ''));
 	}
 	foreach ($steps as $table => $sql) {
 		$rows = $pdo->exec($sql);

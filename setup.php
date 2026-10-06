@@ -99,4 +99,21 @@ function report_totals(array $rows): array {
 	];
 }
 
+// Место из формы: id региона или района, null если не выбрано, текст ошибки для fail(), если выбрано неверно
+function parse_location(array $post): int|string|null {
+	$raw = $post['location_id'] ?? null;
+	if ($raw === null || $raw === '') {
+		return null;
+	}
+	$id = optional_id($raw);
+	if ($id !== null) {
+		$stmt = db()->prepare('SELECT COUNT(*) FROM locations WHERE id = :id AND level IN (2, 3)');
+		$stmt->execute(['id' => $id]);
+		if ($stmt->fetchColumn() > 0) {
+			return $id;
+		}
+	}
+	return 'Выберите регион или район из списка';
+}
+
 ?>

@@ -48,6 +48,24 @@ foreach ($years as $year) {
 	];
 }
 
+$checks['Мест'] = [value("SELECT COUNT(*) FROM $old.llocations"), value('SELECT COUNT(*) FROM locations')];
+foreach ([0 => 'Мест: стран', 1 => 'Мест: округов', 2 => 'Мест: регионов', 3 => 'Мест: районов и городов'] as $level => $label) {
+	$checks[$label] = [
+		value("SELECT COUNT(*) FROM $old.llocations WHERE TIER = $level"),
+		value("SELECT COUNT(*) FROM locations WHERE level = $level"),
+	];
+}
+// Латиница в названиях — признак недоправленных H/p. Ожидаем 0 в новой базе.
+$checks['Мест с латиницей в названии'] = [0, value("SELECT COUNT(*) FROM locations WHERE name REGEXP '[A-Za-z]'")];
+$checks['Покупателей с тем же местом'] = [
+	value("SELECT COUNT(*) FROM $old.buyers"),
+	value("SELECT COUNT(*) FROM buyers b JOIN $old.buyers o ON o.buyer_id = b.id AND o.loc_id = b.location_id"),
+];
+$checks['Контрагентов с тем же местом'] = [
+	value("SELECT COUNT(*) FROM $old.contr"),
+	value("SELECT COUNT(*) FROM contractors c JOIN $old.contr o ON o.contr_id = c.id AND o.loc_id = c.location_id"),
+];
+
 // storage_cnt — остаток, который вело старое приложение; новый считается представлением stock_balance.
 $checks['Позиций остатка'] = [
 	value("SELECT COUNT(*) FROM $old.storage_cnt WHERE dozes <> 0"),

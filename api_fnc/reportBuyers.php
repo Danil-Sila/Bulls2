@@ -8,12 +8,13 @@ function reportBuyers(array $post): array {
 	[$from, $to] = $period;
 
 	$stmt = db()->prepare(
-		"SELECT b.name AS buyer, b.location,
+		"SELECT b.name AS buyer, ln.name AS location,
 			CAST(SUM(s.doses) AS SIGNED) AS doses, COUNT(*) AS purchases
 		 FROM sales s
 		 JOIN buyers b ON b.id = s.buyer_id
+		 LEFT JOIN location_names ln ON ln.id = b.location_id
 		 WHERE s.sold_on BETWEEN :date_from AND :date_to
-		 GROUP BY b.id
+		 GROUP BY b.id, ln.name
 		 ORDER BY b.name, b.id"
 	);
 	$stmt->execute(['date_from' => $from, 'date_to' => $to]);

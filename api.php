@@ -44,6 +44,7 @@ require_once APP_ROOT . 'api_fnc/reportStock.php';
 require_once APP_ROOT . 'api_fnc/reportMovement.php';
 require_once APP_ROOT . 'api_fnc/reportBullMonths.php';
 require_once APP_ROOT . 'api_fnc/reportBullsFarms.php';
+require_once APP_ROOT . 'api_fnc/locationsList.php';
 
 //защита от CSRF
 $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
